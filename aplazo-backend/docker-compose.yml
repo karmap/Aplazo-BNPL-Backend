@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: aplazo-postgres
+    environment:
+      POSTGRES_DB: aplazo_db
+      POSTGRES_USER: aplazo_user
+      POSTGRES_PASSWORD: aplazo_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aplazo_user -d aplazo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin - Database Management GUI
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: aplazo-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aplazo.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  # Spring Boot Application
+  aplazo-backend:
+    build: .
+    container_name: aplazo-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aplazo_db
+      SPRING_DATASOURCE_USERNAME: aplazo_user
+      SPRING_DATASOURCE_PASSWORD: aplazo_password
+      JWT_SECRET: aplazo-secret-key-for-jwt-token-generation-and-validation-2024
+      JWT_EXPIRATION: 86400000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+  pgadmin_data: 
