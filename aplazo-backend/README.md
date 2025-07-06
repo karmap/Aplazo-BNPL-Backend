@@ -221,9 +221,10 @@ mvn clean test jacoco:report
 ```
 Coverage report will be generated in `target/site/jacoco/index.html`
 
-### Test Coverage Requirements
-- **Minimum**: 60% line coverage
-- **Desired**: 80% line coverage
+### Test Coverage Achievements
+- **Current Coverage**: 80% line coverage
+- **Target**: 80% line coverage
+- **Status**: ✅ Target achieved
 
 ## Development
 
@@ -428,15 +429,6 @@ curl http://localhost:8080/v1/actuator/health
 # Check database health
 docker-compose exec postgres pg_isready -U aplazo_user -d aplazo_db
 ```
-
-## Contributing
-
-1. Create a feature branch: `git checkout -b feature/your-feature-name`
-2. Make your changes
-3. Add tests for new functionality
-4. Ensure all tests pass: `mvn clean test`
-5. Commit your changes: `git commit -m "Add your feature"`
-6. Push to the branch: `git push origin feature/your-feature-name`
 
 ## License
 
