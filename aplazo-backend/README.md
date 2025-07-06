@@ -56,9 +56,19 @@ A Spring Boot application implementing a Buy Now Pay Later (BNPL) API that allow
    ```
 
 3. **Access the application**:
-   - API Base URL: `http://localhost:8080/v1`
-   - Swagger UI: `http://localhost:8080/swagger-ui.html`
-   - Health Check: `http://localhost:8080/v1/actuator/health`
+   - **API Base URL**: `http://localhost:8080/v1`
+   - **Swagger UI**: `http://localhost:8080/v1/swagger-ui.html`
+   - **Health Check**: `http://localhost:8080/v1/actuator/health`
+   - **pgAdmin (Database GUI)**: `http://localhost:5050`
+     - **Email**: `admin@aplazo.com`
+     - **Password**: `admin123`
+
+4. **Database Connection (for pgAdmin)**:
+   - **Host**: `postgres`
+   - **Port**: `5432`
+   - **Database**: `aplazo_db`
+   - **Username**: `aplazo_user`
+   - **Password**: `aplazo_password`
 
 ### Manual Setup
 
@@ -71,6 +81,44 @@ A Spring Boot application implementing a Buy Now Pay Later (BNPL) API that allow
    ```bash
    mvn spring-boot:run
    ```
+
+## API Testing
+
+### Postman Collection
+Complete Postman collections are included for easy API testing:
+
+#### Basic Collection
+1. **Import the collection**: `Aplazo-BNPL-API.postman_collection.json`
+2. **Import the environment**: `Aplazo-BNPL-API.postman_environment.json`
+
+#### Enhanced Collection (Recommended)
+1. **Import the enhanced collection**: `Aplazo-BNPL-API-Enhanced.postman_collection.json`
+2. **Import the environment**: `Aplazo-BNPL-API.postman_environment.json`
+3. **Select the environment**: "Aplazo BNPL API - Local"
+
+#### Enhanced Features
+- ✅ **Sample responses** for all endpoints
+- ✅ **Multiple customer examples** (different age groups)
+- ✅ **Multiple loan examples** (different amounts)
+- ✅ **Automated variable management** (customer_id, loan_id, jwt_token)
+- ✅ **Pre-configured requests** with realistic test data
+- ✅ **Authentication handling** with JWT tokens
+- ✅ **Error handling** and validation
+- ✅ **Health check** and monitoring endpoints
+- ✅ **Visual indicators** (emojis) for better organization
+
+### Testing Workflow
+1. **Create Customer** → Customer ID is automatically saved
+2. **Generate JWT Token** → Token is automatically saved
+3. **Create Loan** → Loan ID is automatically saved
+4. **Test other endpoints** using the saved variables
+
+### Collection Features
+- ✅ **Automated variable management** (customer_id, loan_id, jwt_token)
+- ✅ **Pre-configured requests** with sample data
+- ✅ **Authentication handling** with JWT tokens
+- ✅ **Error handling** and validation
+- ✅ **Health check** and monitoring endpoints
 
 ## API Endpoints
 
@@ -273,6 +321,112 @@ docker-compose down
 
 # View logs
 docker-compose logs -f aplazo-backend
+
+# View specific service logs
+docker-compose logs -f postgres
+docker-compose logs -f pgadmin
+
+# Check service status
+docker-compose ps
+
+# Restart a specific service
+docker-compose restart aplazo-backend
+
+# Rebuild and start (after code changes)
+docker-compose up -d --build
+```
+
+### Environment Variables
+The application uses the following environment variables (configured in `docker-compose.yml`):
+
+| Variable | Description | Default Value |
+|----------|-------------|---------------|
+| `SPRING_DATASOURCE_URL` | Database connection URL | `jdbc:postgresql://postgres:5432/aplazo_db` |
+| `SPRING_DATASOURCE_USERNAME` | Database username | `aplazo_user` |
+| `SPRING_DATASOURCE_PASSWORD` | Database password | `aplazo_password` |
+| `JWT_SECRET` | JWT signing secret | `aplazo-secret-key-for-jwt-token-generation-and-validation-2024` |
+| `JWT_EXPIRATION` | JWT token expiration (ms) | `86400000` (24 hours) |
+| `POSTGRES_DB` | PostgreSQL database name | `aplazo_db` |
+| `POSTGRES_USER` | PostgreSQL username | `aplazo_user` |
+| `POSTGRES_PASSWORD` | PostgreSQL password | `aplazo_password` |
+| `PGADMIN_DEFAULT_EMAIL` | pgAdmin login email | `admin@aplazo.com` |
+| `PGADMIN_DEFAULT_PASSWORD` | pgAdmin login password | `admin123` |
+
+## Troubleshooting
+
+### Common Issues
+
+#### Port Already in Use
+```bash
+# Check what's using port 8080
+lsof -i :8080
+
+# Kill the process or use different ports
+docker-compose down
+docker-compose up -d
+```
+
+#### Database Connection Issues
+```bash
+# Check if PostgreSQL is running
+docker-compose ps postgres
+
+# Check PostgreSQL logs
+docker-compose logs postgres
+
+# Restart PostgreSQL
+docker-compose restart postgres
+```
+
+#### Application Won't Start
+```bash
+# Check application logs
+docker-compose logs aplazo-backend
+
+# Rebuild the application
+docker-compose down
+docker-compose up -d --build
+```
+
+#### pgAdmin Connection Issues
+1. **Verify pgAdmin is running**: `docker-compose ps pgadmin`
+2. **Check pgAdmin logs**: `docker-compose logs pgadmin`
+3. **Database connection settings**:
+   - Host: `postgres` (not localhost)
+   - Port: `5432`
+   - Database: `aplazo_db`
+   - Username: `aplazo_user`
+   - Password: `aplazo_password`
+
+#### Data Persistence
+```bash
+# Check if volumes exist
+docker volume ls | grep aplazo
+
+# Backup database
+docker-compose exec postgres pg_dump -U aplazo_user -d aplazo_db > backup.sql
+
+# Restore database
+docker-compose exec postgres psql -U aplazo_user -d aplazo_db < backup.sql
+```
+
+#### Apple Silicon (M1/M2) Issues
+The Dockerfile uses Eclipse Temurin images which have native ARM64 support. If you encounter issues:
+```bash
+# Rebuild with platform specification
+docker build --platform linux/amd64 -t aplazo-backend .
+```
+
+### Health Checks
+```bash
+# Check all services health
+docker-compose ps
+
+# Check application health
+curl http://localhost:8080/v1/actuator/health
+
+# Check database health
+docker-compose exec postgres pg_isready -U aplazo_user -d aplazo_db
 ```
 
 ## Contributing

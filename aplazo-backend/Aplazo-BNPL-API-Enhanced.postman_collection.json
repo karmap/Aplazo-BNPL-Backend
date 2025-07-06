@@ -1,0 +1,925 @@
+{
+	"info": {
+		"_postman_id": "aplazo-bnpl-api-enhanced",
+		"name": "Aplazo BNPL API - Enhanced",
+		"description": "Enhanced API collection with sample data and responses for faster testing of the Aplazo Buy Now Pay Later backend application.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "aplazo-bnpl-api-enhanced"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Generate JWT Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('jwt_token', response.token);",
+									"    console.log('✅ JWT Token saved:', response.token.substring(0, 50) + '...');",
+									"} else {",
+									"    console.log('❌ Failed to generate token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"role\": \"CUSTOMER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"token"
+							]
+						},
+						"description": "Generate a JWT token for a customer. This endpoint accepts any role for development purposes (WARNING: restrict in production)."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"role\": \"CUSTOMER\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/token",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMTQxMjA4MC0yYjE0LTRjOTctOTc1OS03OGRmZDA4NWFmZDkiLCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3MzkzOTc0ODUsImV4cCI6MTczOTQ4Mzg4NX0.example-token\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Generate Admin JWT Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('admin_jwt_token', response.token);",
+									"    console.log('✅ Admin JWT Token saved:', response.token.substring(0, 50) + '...');",
+									"} else {",
+									"    console.log('❌ Failed to generate admin token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"role\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"token"
+							]
+						},
+						"description": "Generate an admin JWT token for accessing admin-only endpoints."
+					},
+					"response": [
+						{
+							"name": "Sample Admin Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"role\": \"ADMIN\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/token",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMTQxMjA4MC0yYjE0LTRjOTctOTc1OS03OGRmZDA4NWFmZDkiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzkzOTc0ODUsImV4cCI6MTczOTQ4Mzg4NX0.admin-token\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Authentication endpoints for JWT token generation"
+		},
+		{
+			"name": "👥 Customer Management",
+			"item": [
+				{
+					"name": "Create Customer - Young (18-25)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('customer_id', response.id);",
+									"    pm.environment.set('customer_credit_line', response.creditLineAmount);",
+									"    console.log('✅ Young customer created with ID:', response.id);",
+									"    console.log('💰 Credit line assigned:', response.creditLineAmount);",
+									"} else {",
+									"    console.log('❌ Failed to create customer:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Ana\",\n  \"lastName\": \"García\",\n  \"secondLastName\": \"López\",\n  \"dateOfBirth\": \"2002-06-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Create a young customer (age 20) - will get $3,000 credit line"
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Ana\",\n  \"lastName\": \"García\",\n  \"secondLastName\": \"López\",\n  \"dateOfBirth\": \"2002-06-15\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/customers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Location",
+									"value": "/v1/customers/f1412080-2b14-4c97-9759-78dfd085afd9"
+								},
+								{
+									"key": "X-Auth-Token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"createdAt\": \"2024-01-15T10:30:00\",\n  \"creditLineAmount\": 3000.00,\n  \"availableCreditLineAmount\": 3000.00\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Customer - Adult (26-30)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Hernández\",\n  \"secondLastName\": \"Martínez\",\n  \"dateOfBirth\": \"1995-03-10\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Create an adult customer (age 28) - will get $5,000 credit line"
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Hernández\",\n  \"secondLastName\": \"Martínez\",\n  \"dateOfBirth\": \"1995-03-10\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/customers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Location",
+									"value": "/v1/customers/008dec19-62f0-4e5f-93f2-4a7b405a4014"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"008dec19-62f0-4e5f-93f2-4a7b405a4014\",\n  \"createdAt\": \"2024-01-15T10:35:00\",\n  \"creditLineAmount\": 5000.00,\n  \"availableCreditLineAmount\": 5000.00\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Customer - Senior (31-65)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"María\",\n  \"lastName\": \"Rodríguez\",\n  \"secondLastName\": \"González\",\n  \"dateOfBirth\": \"1980-11-20\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Create a senior customer (age 43) - will get $8,000 credit line"
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"María\",\n  \"lastName\": \"Rodríguez\",\n  \"secondLastName\": \"González\",\n  \"dateOfBirth\": \"1980-11-20\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/customers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Location",
+									"value": "/v1/customers/c4f2d2fd-ab2a-4cbd-b156-e6f0cbeaed9e"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"c4f2d2fd-ab2a-4cbd-b156-e6f0cbeaed9e\",\n  \"createdAt\": \"2024-01-15T10:40:00\",\n  \"creditLineAmount\": 8000.00,\n  \"availableCreditLineAmount\": 8000.00\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Customer",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customers/{{customer_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}"
+							]
+						},
+						"description": "Get customer details by ID. Requires JWT authentication."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customers/f1412080-2b14-4c97-9759-78dfd085afd9",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customers",
+										"f1412080-2b14-4c97-9759-78dfd085afd9"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"firstName\": \"Ana\",\n  \"lastName\": \"García\",\n  \"secondLastName\": \"López\",\n  \"dateOfBirth\": \"2002-06-15\",\n  \"createdAt\": \"2024-01-15T10:30:00\",\n  \"creditLineAmount\": 3000.00,\n  \"availableCreditLineAmount\": 3000.00\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Customers (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Get all customers. Requires ADMIN role JWT token."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customers"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"id\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n    \"firstName\": \"Ana\",\n    \"lastName\": \"García\",\n    \"secondLastName\": \"López\",\n    \"dateOfBirth\": \"2002-06-15\",\n    \"createdAt\": \"2024-01-15T10:30:00\",\n    \"creditLineAmount\": 3000.00,\n    \"availableCreditLineAmount\": 3000.00\n  },\n  {\n    \"id\": \"008dec19-62f0-4e5f-93f2-4a7b405a4014\",\n    \"firstName\": \"Carlos\",\n    \"lastName\": \"Hernández\",\n    \"secondLastName\": \"Martínez\",\n    \"dateOfBirth\": \"1995-03-10\",\n    \"createdAt\": \"2024-01-15T10:35:00\",\n    \"creditLineAmount\": 5000.00,\n    \"availableCreditLineAmount\": 5000.00\n  },\n  {\n    \"id\": \"c4f2d2fd-ab2a-4cbd-b156-e6f0cbeaed9e\",\n    \"firstName\": \"María\",\n    \"lastName\": \"Rodríguez\",\n    \"secondLastName\": \"González\",\n    \"dateOfBirth\": \"1980-11-20\",\n    \"createdAt\": \"2024-01-15T10:40:00\",\n    \"creditLineAmount\": 8000.00,\n    \"availableCreditLineAmount\": 8000.00\n  }\n]"
+						}
+					]
+				}
+			],
+			"description": "Customer management endpoints for registration and retrieval"
+		},
+		{
+			"name": "💰 Loan Management",
+			"item": [
+				{
+					"name": "Create Loan - Small Amount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('loan_id', response.id);",
+									"    console.log('✅ Loan created with ID:', response.id);",
+									"    console.log('📊 Payment plan generated with', response.paymentPlan.installments.length, 'installments');",
+									"    console.log('💵 Total amount:', response.paymentPlan.totalAmount);",
+									"} else {",
+									"    console.log('❌ Failed to create loan:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"amount\": 500.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans"
+							]
+						},
+						"description": "Create a small loan ($500) for testing. Payment scheme is automatically determined based on first name."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"amount\": 500.00\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/loans",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"loans"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"c4940cf2-a253-4dec-9ead-a66206060ae6\",\n  \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"amount\": 500.00,\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2024-01-15T10:45:00\",\n  \"paymentPlan\": {\n    \"commissionAmount\": 80.00,\n    \"totalAmount\": 580.00,\n    \"interestRate\": 16.00,\n    \"installments\": [\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-01-29\",\n        \"status\": \"NEXT\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-02-12\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-02-26\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-03-12\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-03-26\",\n        \"status\": \"PENDING\"\n      }\n    ]\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Loan - Large Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"amount\": 2000.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans"
+							]
+						},
+						"description": "Create a larger loan ($2,000) for testing different payment amounts."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"amount\": 2000.00\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/loans",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"loans"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"d5a1b2c3-d4e5-f6g7-h8i9-j0k1l2m3n4o5\",\n  \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"amount\": 2000.00,\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2024-01-15T11:00:00\",\n  \"paymentPlan\": {\n    \"commissionAmount\": 320.00,\n    \"totalAmount\": 2320.00,\n    \"interestRate\": 16.00,\n    \"installments\": [\n      {\n        \"amount\": 464.00,\n        \"scheduledPaymentDate\": \"2024-01-29\",\n        \"status\": \"NEXT\"\n      },\n      {\n        \"amount\": 464.00,\n        \"scheduledPaymentDate\": \"2024-02-12\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 464.00,\n        \"scheduledPaymentDate\": \"2024-02-26\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 464.00,\n        \"scheduledPaymentDate\": \"2024-03-12\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 464.00,\n        \"scheduledPaymentDate\": \"2024-03-26\",\n        \"status\": \"PENDING\"\n      }\n    ]\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Loan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/loans/{{loan_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans",
+								"{{loan_id}}"
+							]
+						},
+						"description": "Get loan details by ID. Requires JWT authentication."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/loans/c4940cf2-a253-4dec-9ead-a66206060ae6",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"loans",
+										"c4940cf2-a253-4dec-9ead-a66206060ae6"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"c4940cf2-a253-4dec-9ead-a66206060ae6\",\n  \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n  \"amount\": 500.00,\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2024-01-15T10:45:00\",\n  \"paymentPlan\": {\n    \"commissionAmount\": 80.00,\n    \"totalAmount\": 580.00,\n    \"interestRate\": 16.00,\n    \"installments\": [\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-01-29\",\n        \"status\": \"NEXT\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-02-12\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-02-26\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-03-12\",\n        \"status\": \"PENDING\"\n      },\n      {\n        \"amount\": 116.00,\n        \"scheduledPaymentDate\": \"2024-03-26\",\n        \"status\": \"PENDING\"\n      }\n    ]\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Loans (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/loans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans"
+							]
+						},
+						"description": "Get all loans. Requires ADMIN role JWT token."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/loans",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"loans"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"id\": \"c4940cf2-a253-4dec-9ead-a66206060ae6\",\n    \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n    \"amount\": 500.00,\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2024-01-15T10:45:00\",\n    \"paymentPlan\": {\n      \"commissionAmount\": 80.00,\n      \"totalAmount\": 580.00,\n      \"interestRate\": 16.00\n    }\n  },\n  {\n    \"id\": \"d5a1b2c3-d4e5-f6g7-h8i9-j0k1l2m3n4o5\",\n    \"customerId\": \"f1412080-2b14-4c97-9759-78dfd085afd9\",\n    \"amount\": 2000.00,\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2024-01-15T11:00:00\",\n    \"paymentPlan\": {\n      \"commissionAmount\": 320.00,\n      \"totalAmount\": 2320.00,\n      \"interestRate\": 16.00\n    }\n  }\n]"
+						}
+					]
+				}
+			],
+			"description": "Loan management endpoints for creating and retrieving loans"
+		},
+		{
+			"name": "🏥 Health & Monitoring",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Check application health status. Returns database, disk space, and ping status."
+					},
+					"response": [
+						{
+							"name": "Sample Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/actuator/health",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"actuator",
+										"health"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"status\": \"UP\",\n  \"components\": {\n    \"db\": {\n      \"status\": \"UP\",\n      \"details\": {\n        \"database\": \"PostgreSQL\",\n        \"validationQuery\": \"isValid()\"\n      }\n    },\n    \"diskSpace\": {\n      \"status\": \"UP\",\n      \"details\": {\n        \"total\": 977896124416,\n        \"free\": 925493243904,\n        \"threshold\": 10485760,\n        \"path\": \"/app/.\",\n        \"exists\": true\n      }\n    },\n    \"ping\": {\n      \"status\": \"UP\"\n    }\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "OpenAPI Documentation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-docs",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-docs"
+							]
+						},
+						"description": "Get OpenAPI specification in JSON format."
+					},
+					"response": []
+				}
+			],
+			"description": "Health check and monitoring endpoints"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/v1",
+			"type": "string"
+		},
+		{
+			"key": "customer_id",
+			"value": "",
+			"type": "secret"
+		},
+		{
+			"key": "loan_id",
+			"value": "",
+			"type": "secret"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "secret"
+		},
+		{
+			"key": "admin_jwt_token",
+			"value": "",
+			"type": "secret"
+		},
+		{
+			"key": "customer_credit_line",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 

@@ -1,0 +1,352 @@
+{
+	"info": {
+		"_postman_id": "aplazo-bnpl-api-collection",
+		"name": "Aplazo BNPL API",
+		"description": "Complete API collection for testing the Aplazo Buy Now Pay Later backend application. Includes customer management, loan creation, and authentication endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "aplazo-bnpl-api"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Generate JWT Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('jwt_token', response.token);",
+									"    console.log('JWT Token saved:', response.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"role\": \"CUSTOMER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"token"
+							]
+						},
+						"description": "Generate a JWT token for a customer. This endpoint accepts any role for development purposes (WARNING: restrict in production)."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for JWT token generation"
+		},
+		{
+			"name": "Customer Management",
+			"item": [
+				{
+					"name": "Create Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('customer_id', response.id);",
+									"    pm.environment.set('customer_credit_line', response.creditLineAmount);",
+									"    console.log('Customer created with ID:', response.id);",
+									"    console.log('Credit line assigned:', response.creditLineAmount);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Juan\",\n  \"lastName\": \"López\",\n  \"secondLastName\": \"Pérez\",\n  \"dateOfBirth\": \"1998-07-21\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Create a new customer. Age-based credit line will be automatically assigned:\n- 18-25 years: $3,000\n- 26-30 years: $5,000\n- 31-65 years: $8,000"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customers/{{customer_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}"
+							]
+						},
+						"description": "Get customer details by ID. Requires JWT authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Customers (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
+						},
+						"description": "Get all customers. Requires ADMIN role JWT token."
+					},
+					"response": []
+				}
+			],
+			"description": "Customer management endpoints for registration and retrieval"
+		},
+		{
+			"name": "Loan Management",
+			"item": [
+				{
+					"name": "Create Loan",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('loan_id', response.id);",
+									"    console.log('Loan created with ID:', response.id);",
+									"    console.log('Payment plan generated with', response.paymentPlan.installments.length, 'installments');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"amount\": 1000.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans"
+							]
+						},
+						"description": "Create a new loan for a customer. Payment scheme is automatically determined:\n- Scheme 1 (13%): First names starting with C, L, or H\n- Scheme 2 (16%): All other customers\n\n5 biweekly installments are automatically generated."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Loan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/loans/{{loan_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans",
+								"{{loan_id}}"
+							]
+						},
+						"description": "Get loan details by ID. Requires JWT authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Loans (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/loans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans"
+							]
+						},
+						"description": "Get all loans. Requires ADMIN role JWT token."
+					},
+					"response": []
+				}
+			],
+			"description": "Loan management endpoints for creating and retrieving loans"
+		},
+		{
+			"name": "Health & Monitoring",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Check application health status. Returns database, disk space, and ping status."
+					},
+					"response": []
+				},
+				{
+					"name": "OpenAPI Documentation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-docs",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-docs"
+							]
+						},
+						"description": "Get OpenAPI specification in JSON format."
+					},
+					"response": []
+				}
+			],
+			"description": "Health check and monitoring endpoints"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/v1",
+			"type": "string"
+		},
+		{
+			"key": "customer_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "loan_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_credit_line",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 
